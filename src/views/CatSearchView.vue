@@ -1,6 +1,9 @@
 <template>
   <div>
     <div class="search__container">
+      <div>
+        <SelectImageType @change="selectImageTypeHandler" />
+      </div>
       <div class="search__input">
         <SearchInput :default-value="searchQuery" @change="onSearchHandler" />
       </div>
@@ -16,25 +19,44 @@
 <script>
 import SearchInput from "@/components/SearchInput.vue";
 import SearchResultList from "@/components/SearchResultList.vue";
+import SelectImageType from "@/components/SelectImageType.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "CatSearchView",
-  components: { SearchInput, SearchResultList },
+  components: { SearchInput, SearchResultList, SelectImageType },
   data() {
-    return { searchQuery: "" };
+    return { searchQuery: "", imageType: "" };
   },
   computed: {
     ...mapGetters({
       getFetchedCount: "catsSlice/getFetchedCount",
       getItems: "catsSlice/getItems",
     }),
+    changedProps() {
+      const { searchQuery, imageType } = this;
+      return { searchQuery, imageType };
+    },
+  },
+  watch: {
+    changedProps: {
+      handler(value) {
+        const payload = {
+          query: value.searchQuery,
+          imageType: value.imageType,
+        };
+        this.fetchCatsSearch(payload);
+      },
+    },
   },
   methods: {
     ...mapActions({
       fetchCatsSearch: "catsSlice/fetchCatsSearch",
     }),
     onSearchHandler(query) {
-      this.fetchCatsSearch(query);
+      this.searchQuery = query;
+    },
+    selectImageTypeHandler(type) {
+      this.imageType = type;
     },
   },
 };

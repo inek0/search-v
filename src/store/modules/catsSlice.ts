@@ -26,10 +26,14 @@ export const catsSlice = {
     getItemById: (state: CatsSliceState) => (id) => state.map[id],
   },
   actions: {
-    async fetchCatsSearch({ commit }, payload: string) {
+    async fetchCatsSearch(
+      { commit },
+      payload: { query: string; imageType: string }
+    ) {
+      const { query, imageType } = payload;
       try {
         const response = await client.get(
-          `https://pixabay.com/api/?key=${CLIENT_KEY}&q=${payload}`
+          `https://pixabay.com/api/?key=${CLIENT_KEY}&q=${query}&image_type=${imageType}`
         );
         const { hits, total, totalHits } = response.data;
         commit("SET_CATS", { hits, total, totalHits });
